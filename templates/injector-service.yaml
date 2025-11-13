@@ -8,12 +8,12 @@ metadata:
     app.kubernetes.io/name: {{ include "vault.name" . }}-agent-injector
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
+    component: webhook
 spec:
   ports:
   - port: 443
-    targetPort: 8443
+    targetPort: 8080
   selector:
     app.kubernetes.io/name: {{ include "vault.name" . }}-agent-injector
     app.kubernetes.io/instance: {{ .Release.Name }}
-    component: webhook
 {{- end }}
