@@ -60,6 +60,9 @@ injector:
     certName: tls.crt
     keyName: tls.key
 
+  # Add this - important for auto TLS
+  authPath: "auth/kubernetes"
+  
   resources: {}
   # resources:
   #   requests:
@@ -76,7 +79,7 @@ server:
 
   image:
     repository: "vault"
-    tag: "1.3.2"
+    tag: "1.19.0"
     # Overrides the default Image Pull Policy
     pullPolicy: IfNotPresent
 
