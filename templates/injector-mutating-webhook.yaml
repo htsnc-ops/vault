@@ -8,19 +8,8 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 webhooks:
-  - sideEffect: None
-    admissionReviewVersions: ["v1", "v1beta1"]
-    name: {{ template "vault.fullname" . }}-agent-injector-webhook.{{ .Release.Namespace }}.svc.cluster.local
-    failurePolicy: {{ .Values.injector.failurePolicy }}
-    matchPolicy: Equivalent
-    namespaceSelector: {}
-    objectSelector: {}
-    rules:
-      - operations: ["CREATE", "UPDATE"]
-        apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
   - name: vault.hashicorp.com
+    sideEffects: None
     clientConfig:
       service:
         name: {{ template "vault.fullname" . }}-agent-injector-svc
