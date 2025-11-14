@@ -7,11 +7,13 @@ SPDX-License-Identifier: MPL-2.0
 {{- if ne .mode "external" }}
 {{- template "vault.serverServiceEnabled" . -}}
 {{- if .serverServiceEnabled -}}
-# Service for Vault cluster
+{{- if eq .mode "ha" }}
+{{- if eq (.Values.server.service.standby.enabled | toString) "true" }}
+# Service for standby Vault pod
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "vault.fullname" . }}
+  name: {{ template "vault.fullname" . }}-standby
   namespace: {{ include "vault.namespace" . }}
   labels:
     helm.sh/chart: {{ include "vault.chart" . }}
@@ -19,7 +21,8 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
   annotations:
-{{ template "vault.service.annotations" .}}
+{{- template "vault.service.annotations" . }}
+{{- template "vault.service.standby.annotations" . }}
 spec:
   {{- if .Values.server.service.type}}
   type: {{ .Values.server.service.type }}
@@ -36,15 +39,13 @@ spec:
   clusterIP: {{ .Values.server.service.clusterIP }}
   {{- end }}
   {{- include "service.externalTrafficPolicy" .Values.server.service }}
-  # We want the servers to become available even if they're not ready
-  # since this DNS is also used for join operations.
   publishNotReadyAddresses: {{ .Values.server.service.publishNotReadyAddresses }}
   ports:
     - name: {{ include "vault.scheme" . }}
       port: {{ .Values.server.service.port }}
       targetPort: {{ .Values.server.service.targetPort }}
-      {{- if and (.Values.server.service.nodePort) (eq (.Values.server.service.type | toString) "NodePort") }}
-      nodePort: {{ .Values.server.service.nodePort }}
+      {{- if and (.Values.server.service.standbyNodePort) (eq (.Values.server.service.type | toString) "NodePort") }}
+      nodePort: {{ .Values.server.service.standbyNodePort }}
       {{- end }}
     - name: https-internal
       port: 8201
@@ -55,5 +56,8 @@ spec:
     app.kubernetes.io/instance: {{ .Release.Name }}
     {{- end }}
     component: server
+    vault-active: "false"
+{{- end }}
+{{- end }}
 {{- end }}
 {{- end }}
