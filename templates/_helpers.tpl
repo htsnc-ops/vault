@@ -312,7 +312,7 @@ storage might be desired by the user.
           requests:
             storage: {{ .Values.server.auditStorage.size }}
           {{- if .Values.server.auditStorage.storageClass }}
-        storageClassName: {{ .Values.server.auditStorage.storageClass }}
+        storageClassName: local-storage
           {{- end }}
       {{ end }}
   {{ end }}
